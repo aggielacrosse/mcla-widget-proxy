@@ -22,10 +22,35 @@ const escape = (string) => {
     return string.replace(/'/g, '\\\'');
 }
 
+const IMAGE_REGEX = /background-image:url\('\/\/img\.mcla\.us\/teams\/logos\/(\d+)\.png'\);/;
+const ONCLICK_REGEX = /window\.open\('http:\/\/mcla.us\/game\/\d+'\)/
+
 const allowedTags = sanitizeHtml.defaults.allowedTags.concat([ 'img', 'style', 'tfoot' ]);
 const allowedAttributes = sanitizeHtml.defaults.allowedAttributes;
 allowedAttributes['th'] = ['colspan'];
 allowedAttributes['*'] = ['style', 'class', 'id'];
+allowedAttributes['tr'] = ['onclick'];
+const transformTags = {
+    'i': (tagName, attribs) => {
+        const styleImageMatches = attribs.style.match(IMAGE_REGEX);
+        if (styleImageMatches) {
+            attribs.style = `background-image:url(\'http://img.mcla.us/teams/logos/${styleImageMatches[1]}.png');`
+        }
+        return {
+            tagName,
+            attribs
+        }
+    },
+    'tr': (tagName, attribs) => {
+        if (!ONCLICK_REGEX.test(attribs.onclick)) {
+            delete attribs.onclick;
+        }
+        return {
+            tagName,
+            attribs
+        }
+    }
+}
 
 const render = (widgetSource) => {
     try {
@@ -34,7 +59,8 @@ const render = (widgetSource) => {
         const raw = unescape(src);
         const sanitized = sanitizeHtml(raw, {
             allowedTags,
-            allowedAttributes
+            allowedAttributes,
+            transformTags
         });
         return `${PREFIX}${escape(sanitized)}${POSTFIX}`
     } catch (err) {
