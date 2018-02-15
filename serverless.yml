@@ -1,5 +1,13 @@
 service: mcla-widget
 
+plugins:
+  - serverless-apigw-binary
+
+custom:
+  apigwBinary:
+    types:
+      - '*/*'
+
 provider:
   name: aws
   runtime: nodejs6.10
@@ -12,3 +20,6 @@ functions:
     events:
       - http: any /
       - http: any /{proxy+}
+    environment:
+      REST_URL:
+        Fn::Join: ["", [ "https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.", { "Ref": "AWS::Region" }, ".amazonaws.com/${opt:stage}" ] ]
