@@ -22,8 +22,8 @@ const escape = (string) => {
     return string.replace(/'/g, '\\\'');
 }
 
-const IMAGE_REGEX = /background-image:url\('\/\/img\.mcla\.us\/teams\/logos\/(\d+)\.png'\);/;
-const ONCLICK_REGEX = /window\.open\('http:\/\/mcla.us\/game\/\d+'\)/
+const IMAGE_REGEX = /^background-image:url\('\/\/img\.mcla\.us\/teams\/logos\/(\d+)\.png'\);$/;
+const ONCLICK_REGEX = /^window\.open\('http:\/\/mcla.us\/game\/\d+'\)$/
 
 const allowedTags = sanitizeHtml.defaults.allowedTags.concat([ 'img', 'style', 'tfoot' ]);
 const allowedAttributes = sanitizeHtml.defaults.allowedAttributes;
