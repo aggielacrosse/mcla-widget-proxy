@@ -28,14 +28,18 @@ allowedAttributes['th'] = ['colspan'];
 allowedAttributes['*'] = ['style', 'class', 'id'];
 
 const render = (widgetSource) => {
-    const regex = new RegExp(`${ESCAPED_PREFIX}(.*)${ESCAPED_POSTFIX}`);
-    const [all, src] = widgetSource.match(regex);
-    const raw = unescape(src);
-    const sanitized = sanitizeHtml(raw, {
-        allowedTags,
-        allowedAttributes
-    });
-    return `${PREFIX}${escape(sanitized)}${POSTFIX}`
+    try {
+        const regex = new RegExp(`${ESCAPED_PREFIX}(.*)${ESCAPED_POSTFIX}`);
+        const [all, src] = widgetSource.match(regex);
+        const raw = unescape(src);
+        const sanitized = sanitizeHtml(raw, {
+            allowedTags,
+            allowedAttributes
+        });
+        return `${PREFIX}${escape(sanitized)}${POSTFIX}`
+    } catch (err) {
+        return '/* There was an issue rendering this script */';
+    }
 }
 
 app.get('/widget', (req, res) => {
