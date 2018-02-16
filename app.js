@@ -8,7 +8,7 @@ const path = require('path');
 const escapeStringRegexp = require('escape-string-regexp');
 const sanitizeHtml = require('sanitize-html');
 
-const REST_URL = process.env.REST_URL || 'http://localhost:3000';
+const IMAGE_BUCKET_URL = process.env.IMAGE_BUCKET_URL || 'http://localhost:3000';
 const MCLA_WIDGET_URL = 'http://mcla.us/api/widget/v2';
 
 const PREFIX = `var dw=function(t){document.writeln(t)};dw('`;
@@ -26,7 +26,7 @@ const escape = (string) => {
 
 const IMAGE_REGEX = /^background-image:url\('\/\/img\.mcla\.us\/teams\/logos\/(\d+)\.png'\);$/;
 const LOGO_SRC = 'http://mcla.us/img/layout/logo-tiny.png';
-const REPLACED_LOGO_SRC = `${REST_URL}/image/logo-tiny.png`;
+const REPLACED_LOGO_SRC = `${IMAGE_BUCKET_URL}/logo-tiny.png`;
 const ONCLICK_REGEX = /^window\.open\('http:\/\/mcla.us\/game\/\d+'\)$/
 
 const allowedTags = sanitizeHtml.defaults.allowedTags.concat([ 'img', 'style', 'tfoot' ]);
@@ -38,7 +38,7 @@ const transformTags = {
     'i': (tagName, attribs) => {
         const styleImageMatches = attribs.style.match(IMAGE_REGEX);
         if (styleImageMatches) {
-            attribs.style = `background-image:url(\'${REST_URL}/image/${styleImageMatches[1]}.png');`
+            attribs.style = `background-image:url(\'${IMAGE_BUCKET_URL}/${styleImageMatches[1]}.png');`
         }
         return {
             tagName,

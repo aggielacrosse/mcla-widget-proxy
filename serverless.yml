@@ -1,18 +1,14 @@
 service: mcla-widget
 
-plugins:
-  - serverless-apigw-binary
-
-custom:
-  apigwBinary:
-    types:
-      - '*/*'
-
 provider:
   name: aws
   runtime: nodejs6.10
   memorySize: 512
   timeout: 10
+
+package:
+  exclude:
+    - content/**
 
 functions:
   widget:
@@ -21,5 +17,40 @@ functions:
       - http: any /
       - http: any /{proxy+}
     environment:
-      REST_URL:
-        Fn::Join: ["", [ "https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.", { "Ref": "AWS::Region" }, ".amazonaws.com/${opt:stage}" ] ]
+      IMAGE_BUCKET_URL:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Fn::GetAtt: [ImageBucket, DomainName]
+
+resources:
+  Resources:
+    ImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: s3:GetObject
+              Resource: 
+                Fn::Join:
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - Ref: ImageBucket
+                    - '/*'
+        Bucket:
+          Ref: ImageBucket
+Outputs:
+  BucketName:
+    Description: S3 Bucket Name
+    Value:
+      Ref: ImageBucket

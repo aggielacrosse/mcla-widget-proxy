@@ -9,14 +9,13 @@
     "express": "^4.16.2",
     "node-fetch": "^2.0.0",
     "query-string": "^5.1.0",
-    "sanitize-html": "^1.17.0",
-    "serverless-apigw-binary": "^0.4.4"
+    "sanitize-html": "^1.17.0"
   },
   "devDependencies": {
     "serverless": "^1.26.0"
   },
   "scripts": {
-    "deploy": "sls deploy --stage dev",
-    "deploy:prod": "sls deploy --stage prod"
+    "deploy": "STAGE=dev ./deploy.sh",
+    "deploy:prod": "STAGE=prod ./deploy.sh"
   }
 }
